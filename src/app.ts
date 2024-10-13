@@ -1,12 +1,13 @@
 import express from 'express';
 import 'reflect-metadata';
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hello Worldaa');
+    res.status(200);
+    res.send();
 });
 
 const port = process.env.PORT || 3000;
