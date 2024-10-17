@@ -1,6 +1,24 @@
 version: '3.9'
 
 services:
+    # ####################################################################
+    # # API backend service                                              #
+    # ####################################################################
+    # banking-api:
+    #     container_name: banking-api
+    #     restart: always
+    #     build:
+    #         context: .
+    #         dockerfile: ./Dockerfile
+    #         target: development
+    #     ports:
+    #         - 3000:3000
+    #     volumnes::
+    #         - '/app/node_modules'
+    #         - '.:/usr/src/app'
+    #     env_file:
+    #         - .env
+    #     user: node
     ####################################################################
     # PostgreSQL database                                              #
     ####################################################################
@@ -11,8 +29,8 @@ services:
         volumes:
             - db:/var/lib/postgresql/data
         environment:
-            - POSTGRES_PASSWORD=${DB_NAME}
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_PASSWORD=${DB_PASS}
             - POSTGRES_USER=${DB_USER}
-            - POSTGRES_DB=${DB_PASS}
 volumes:
     db:
