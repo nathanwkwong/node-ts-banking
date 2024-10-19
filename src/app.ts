@@ -1,10 +1,10 @@
-import express from 'express';
 import 'reflect-metadata';
+import express from 'express';
 import { postgresDataSource } from './config/database';
 
 postgresDataSource
     .initialize()
-    .then(() => {
+    .then(async (source) => {
         console.log('Database initialized');
     })
     .catch((err) => {
