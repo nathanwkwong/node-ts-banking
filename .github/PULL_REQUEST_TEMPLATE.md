@@ -1,17 +1,17 @@
 ## What does this PR do?
 
-_Describe what this PR does_
+(Describe what this PR does)
 
 ## Related Projects/Specs/Tasks (if any)?
 
-_Include any links to related projects/specs/tasks_
+(Include any links to related projects/specs/tasks)
 
 ## How should this be manually tested?
 
-_Describe how this can be tested_
+(Describe how this can be tested)
 
 ## Any background context you want to provide?(Optional)
 
-_Add any information that will further explain or provide extra context on what drove you to create this PR_
+(Add any information that will further explain or provide extra context on what drove you to create this PR)
 
 ## What are the relevant Notion URLs?
