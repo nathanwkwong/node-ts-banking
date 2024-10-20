@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "A bankend application using Typescript and Node.js to perform traditional bank transactions with ledger and security measurements.",
   "main": "index.js",
+  "lint-staged": {
+    "**/*": [
+      "prettier --write --ignore-unknown",
+      "eslint"
+    ]
+  },
   "scripts": {
     "dev": "nodemon src/app.ts",
     "build": "tsc --build",
@@ -17,7 +23,8 @@
     "migrate:up": "typeorm-ts-node-esm migration:run -d src/config/database.ts",
     "migrate:genUp": "npm run migrate:gen && npm run migrate:up",
     "migrate:revert": "typeorm-ts-node-esm migration:revert -d src/config/database.ts",
-    "migrate:drop": "typeorm-ts-node-esm schema:drop -d src/config/database.ts && rm -R src/migrations"
+    "migrate:drop": "typeorm-ts-node-esm schema:drop -d src/config/database.ts && rm -R src/migrations",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
