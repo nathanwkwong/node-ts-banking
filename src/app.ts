@@ -4,7 +4,7 @@ import { postgresDataSource } from './config/database'
 
 postgresDataSource
   .initialize()
-  .then(async (source) => {
+  .then(async () => {
     console.log('Database initialized')
   })
   .catch((err) => {
@@ -12,7 +12,6 @@ postgresDataSource
   })
 
 export const app = express()
-
 app.use(express.json())
 
 app.get('/', (req, res) => {
