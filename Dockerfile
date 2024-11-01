@@ -8,8 +8,10 @@ WORKDIR /home/node
 
 ENV NODE_ENV production
 
-COPY package*.json ./
-RUN npm ci
+COPY --chown=node:node package*.json ./
+
+# Remove the prepare script and install only production dependencies
+RUN npm pkg delete scripts.prepare && npm ci --only=production && npm cache clean --force
 
 COPY --chown=node:node . .
 RUN npm run build \
