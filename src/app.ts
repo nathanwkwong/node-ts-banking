@@ -3,6 +3,7 @@ import express from 'express'
 import { postgresDataSource } from './config/database'
 import { logger } from './utils/logger'
 import { authRouter } from './routes/auth.route'
+import { errorHandler } from './middlewares/errorHandler'
 
 postgresDataSource
   .initialize()
@@ -22,6 +23,8 @@ app.get('/', (req, res) => {
   res.status(200)
   res.send()
 })
+
+app.use(errorHandler)
 
 const port = process.env.PORT || 3000
 
