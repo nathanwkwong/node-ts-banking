@@ -1,19 +1,20 @@
-import express from 'express'
+// functions to get the requestsed data from the models
+import express, { NextFunction } from 'express'
 import { AuthService } from '../services/auth.service'
 
 export class AuthController {
-  private service: AuthService
+  private authService: AuthService
   constructor(authService: AuthService) {
-    this.service = authService
+    this.authService = authService
   }
 
-  createUser = async (req: express.Request, res: express.Response) => {
+  createUser = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const userData = req.body
-      const user = this.service.createUser(userData)
+      const user = await this.authService.createUser(userData)
       res.status(201).send(user)
     } catch (error) {
-      res.status(500).send(error)
+      next(error)
     }
   }
 }
