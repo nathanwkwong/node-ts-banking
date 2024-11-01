@@ -1,14 +1,15 @@
 import 'reflect-metadata'
 import express from 'express'
 import { postgresDataSource } from './config/database'
+import { logger } from './utils/logger'
 
 postgresDataSource
   .initialize()
   .then(async () => {
-    console.log('Database initialized')
+    logger.info('Database initialized')
   })
   .catch((err) => {
-    console.log('Error connecting to initialized: ', err)
+    logger.info('Error connecting to initialized: ', err)
   })
 
 export const app = express()
@@ -22,5 +23,5 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+  logger.info(`Server is running on port ${port}`)
 })
