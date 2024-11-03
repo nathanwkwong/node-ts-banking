@@ -1,6 +1,6 @@
 import express, { NextFunction } from 'express'
 import { AccountService } from '../services/account.service'
-import { AccountCreationDto } from '../schemas/account.schema'
+import { AccountCreationDto, GetAccountParam } from '../schemas/account.schema'
 import { User } from '../entities/user.entity'
 
 export class AccountController {
@@ -25,6 +25,28 @@ export class AccountController {
     try {
       const accounts = await this.accountService.getAllAccounts(req.user as User)
       res.status(200).send(accounts)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  getAccountWithAccountId = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    try {
+      const { accountId } = req.params as GetAccountParam
+
+      const accounts = await this.accountService.getAccountWithAccountId(req.user as User, accountId)
+      res.status(200).send(accounts)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  deleteAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    try {
+      const { accountId } = req.params as GetAccountParam
+
+      await this.accountService.deleteAccount(req.user as User, accountId)
+      res.status(204).send()
     } catch (error) {
       next(error)
     }

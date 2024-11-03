@@ -32,7 +32,20 @@ export class AccountService {
   getAllAccounts = async (user: User): Promise<Account[]> => {
     return await Account.find({
       where: { user: { id: user.id } },
-      select: ['accountNumber', 'balance', 'currency', 'accountType', 'status'],
+      select: ['id', 'accountNumber', 'balance', 'currency', 'accountType', 'status'],
     })
+  }
+
+  getAccountWithAccountId = async (user: User, accountId: string): Promise<Account> => {
+    return (
+      await Account.find({
+        where: { user: { id: user.id }, id: accountId },
+        select: ['id', 'accountNumber', 'balance', 'currency', 'accountType', 'status'],
+      })
+    )[0]
+  }
+
+  deleteAccount = async (user: User, accountId: string) => {
+    await Account.delete({ id: accountId, user: { id: user.id } })
   }
 }
