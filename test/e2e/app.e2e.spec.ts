@@ -1,16 +1,21 @@
 import request from 'supertest'
 import { app } from '../../src/app'
-import { postgresDataSource } from '../../src/config/database'
+import { PostgreSqlContainer } from '@testcontainers/postgresql'
+import { Client } from 'pg'
 
 describe('GET /', () => {
+  let postgresContainer
+  let postgresClient
+
   beforeAll(async () => {
-    await postgresDataSource.initialize()
+    postgresContainer = await new PostgreSqlContainer().start()
+    postgresClient = new Client({ connectionString: postgresContainer.getConnectionUri() })
+    await postgresClient.connect()
   })
 
   afterAll(async () => {
-    if (postgresDataSource.isConnected) {
-      await postgresDataSource.destroy()
-    }
+    await postgresClient.end()
+    await postgresContainer.stop()
   })
 
   it('should return Hello Worldaa', async () => {
