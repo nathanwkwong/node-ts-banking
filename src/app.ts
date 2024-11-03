@@ -6,6 +6,7 @@ import { authRouter } from './routes/auth.route'
 import { errorHandler } from './middlewares/errorHandler'
 import { initPassport } from './config/passport'
 import passport from 'passport'
+import { accountsRouter } from './routes/accounts.route'
 
 postgresDataSource
   .initialize()
@@ -23,7 +24,8 @@ app.use(express.json())
 app.use(passport.initialize())
 initPassport()
 
-app.use('/auth', authRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/accounts', accountsRouter)
 
 app.get('/', (req, res) => {
   res.status(200)
