@@ -28,4 +28,11 @@ export class AccountService {
       })
       .execute()
   }
+
+  getAllAccounts = async (user: User): Promise<Account[]> => {
+    return await Account.find({
+      where: { user: { id: user.id } },
+      select: ['accountNumber', 'balance', 'currency', 'accountType', 'status'],
+    })
+  }
 }

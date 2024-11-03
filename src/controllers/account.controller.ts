@@ -20,4 +20,13 @@ export class AccountController {
       next(error)
     }
   }
+
+  getAllAccounts = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    try {
+      const accounts = await this.accountService.getAllAccounts(req.user as User)
+      res.status(200).send(accounts)
+    } catch (error) {
+      next(error)
+    }
+  }
 }

@@ -12,3 +12,4 @@ const accountController = new AccountController(accountService)
 
 // route: /accounts
 accountsRouter.post('/', authGuard, validateRequestBody(AccountCreationSchema), accountController.createAccount)
+accountsRouter.get('/', authGuard, accountController.getAllAccounts)
