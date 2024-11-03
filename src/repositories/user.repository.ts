@@ -3,7 +3,7 @@ import { User } from '../entities/user.entity'
 import { UserRegistrationDto } from '../schemas/user.schema'
 
 export class UserRepository {
-  getUserByName = async (username: string): Promise<User> => {
+  getUserByUsername = async (username: string): Promise<User> => {
     const user = await postgresDataSource
       .getRepository(User)
       .createQueryBuilder()

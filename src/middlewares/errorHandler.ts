@@ -3,7 +3,7 @@ import { BadRequestException } from '../utils/exceptions/badRequestException'
 import { logger } from '../utils/logger'
 
 export const errorHandler = (err: Error, req: express.Request, res: express.Response) => {
-  logger.info('Create user error:', err.message)
+  logger.info('Error log:', err.message)
 
   if (err instanceof BadRequestException) {
     res.status(err.status).json({ error: err.message })
