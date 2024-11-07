@@ -1,15 +1,15 @@
 import { Router } from 'express'
 import { AuthController } from '../controllers/auth.controller'
-import { UserRepository } from '../repositories/user.repository'
 import { AuthService } from '../services/auth.service'
 import { validateRequestBody } from '../middlewares/validationMiddleware'
-import { UserRegistrationSchema } from '../schemas/user.schema'
+import { UserLoginSchema, UserRegistrationSchema } from '../schemas/user.schema'
+import { repository } from '../repositories'
 
-// forward requests to appropriate controller functions
 export const authRouter = Router()
 
-const userRepository = new UserRepository()
-const authService = new AuthService(userRepository)
+const authService = new AuthService(repository.userRepository)
 const authController = new AuthController(authService)
 
+// route: /auth
 authRouter.post('/register', validateRequestBody(UserRegistrationSchema), authController.createUser)
+authRouter.post('/login', validateRequestBody(UserLoginSchema), authController.login)
