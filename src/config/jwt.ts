@@ -3,7 +3,7 @@ import 'dotenv/config'
 export const jwtConfig = {
   jwtSecret: process.env.JWT_SECRET,
   jwtSession: {
-    expiresIn: '1h',
+    expiresIn: process.env.JWT_SESSION_EXPIRES_IN,
     session: false,
   },
 }
