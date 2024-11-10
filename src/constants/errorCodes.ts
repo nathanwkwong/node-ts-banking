@@ -1,0 +1,5 @@
+export enum ErrorCode {
+  JWT_FAILED = 'AUTH_001',
+  USER_NOT_FOUND = 'AUTH_002',
+  INVALID_CREDENTIALS = 'AUTH_003',
+}

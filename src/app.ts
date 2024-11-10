@@ -4,6 +4,8 @@ import { postgresDataSource } from './config/database'
 import { logger } from './utils/logger'
 import { authRouter } from './routes/auth.route'
 import { errorHandler } from './middlewares/errorHandler'
+import { initPassport } from './config/passport'
+import passport from 'passport'
 
 postgresDataSource
   .initialize()
@@ -15,7 +17,11 @@ postgresDataSource
   })
 
 export const app = express()
+
 app.use(express.json())
+
+app.use(passport.initialize())
+initPassport()
 
 app.use('/auth', authRouter)
 
