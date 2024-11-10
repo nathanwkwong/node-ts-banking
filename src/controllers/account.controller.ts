@@ -11,9 +11,9 @@ export class AccountController {
 
   createAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
-      const { accountType, currency, status } = req.body as AccountCreationDto
+      const accountInfo = req.body as AccountCreationDto
 
-      const account = await this.accountService.createAccount(req.user as User, accountType, currency, status)
+      const account = await this.accountService.createAccount(req.user as User, accountInfo)
 
       res.status(201).send(account)
     } catch (error) {

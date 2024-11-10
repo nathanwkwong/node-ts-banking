@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Generated,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,20 +19,26 @@ export class Account extends BaseEntity {
   @ManyToOne(() => User)
   user: User
 
-  @Column({ unique: true })
-  @Generated('increment')
-  accountNumber: number
+  // make this column required
+  @Column({ nullable: false })
+  bankCode: string
 
-  @Column('enum', { enum: AccountCurrency, default: AccountCurrency.HKD })
+  @Column({ nullable: false })
+  branchCode: string
+
+  @Column({ unique: true, nullable: false })
+  accountNumber: string
+
+  @Column('enum', { enum: AccountCurrency, default: AccountCurrency.HKD, nullable: false })
   currency: AccountCurrency
 
   @Column('decimal', { precision: 10, scale: 2 })
   balance: number
 
-  @Column('enum', { enum: AccountType, default: AccountType.SAVING })
+  @Column('enum', { enum: AccountType, default: AccountType.SAVING, nullable: false })
   accountType: AccountType
 
-  @Column('enum', { enum: AccountStatus, default: AccountStatus.ACTIVE })
+  @Column('enum', { enum: AccountStatus, default: AccountStatus.ACTIVE, nullable: false })
   status: string
 
   @CreateDateColumn()

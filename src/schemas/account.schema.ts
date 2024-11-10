@@ -7,6 +7,8 @@ export const AccountCreationSchema = z.object({
   accountType: z.nativeEnum(AccountType),
   currency: z.nativeEnum(AccountCurrency),
   status: z.nativeEnum(AccountStatus),
+  bankCode: z.string(),
+  branchCode: z.string(),
 })
 export type AccountCreationDto = z.infer<typeof AccountCreationSchema>
 
