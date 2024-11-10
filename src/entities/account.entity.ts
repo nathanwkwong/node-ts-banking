@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 import { User } from './user.entity'
+import { AccountCurrency } from '../constants/currency'
+import { AccountStatus, AccountType } from '../constants/account'
 
 @Entity()
 export class Account extends BaseEntity {
@@ -17,16 +19,26 @@ export class Account extends BaseEntity {
   @ManyToOne(() => User)
   user: User
 
-  @Column({ unique: true })
+  // make this column required
+  @Column({ nullable: false })
+  bankCode: string
+
+  @Column({ nullable: false })
+  branchCode: string
+
+  @Column({ unique: true, nullable: false })
   accountNumber: string
+
+  @Column('enum', { enum: AccountCurrency, default: AccountCurrency.HKD, nullable: false })
+  currency: AccountCurrency
 
   @Column('decimal', { precision: 10, scale: 2 })
   balance: number
 
-  @Column()
-  accountType: string
+  @Column('enum', { enum: AccountType, default: AccountType.SAVING, nullable: false })
+  accountType: AccountType
 
-  @Column()
+  @Column('enum', { enum: AccountStatus, default: AccountStatus.ACTIVE, nullable: false })
   status: string
 
   @CreateDateColumn()

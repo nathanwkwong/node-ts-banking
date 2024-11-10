@@ -46,12 +46,12 @@ export class AuthService {
       username: user.username,
     }
 
-    const token = jwt.sign(payload, jwtConfig.jwtSecret, { expiresIn: jwtConfig.jwtSession.expiresIn })
+    const accessToken = jwt.sign(payload, jwtConfig.jwtSecret, { expiresIn: jwtConfig.jwtSession.expiresIn })
 
     return {
       userId: user.id,
       username: user.username,
-      token,
+      accessToken,
     }
   }
 }

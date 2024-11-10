@@ -2,7 +2,7 @@ import * as bcrypt from 'bcrypt'
 import 'dotenv/config'
 
 export async function hashPassword(plainPassword: string) {
-  const hash = await bcrypt.hash(plainPassword, process.env.BCRYPT_SALT_ROUNDS)
+  const hash = await bcrypt.hash(plainPassword, Number(process.env.BCRYPT_SALT_ROUNDS))
   return hash
 }
 
