@@ -1,4 +1,5 @@
 import { jwtConfig } from '../config/jwt'
+import { ErrorCode } from '../constants/errorCodes'
 import { UserRepository } from '../repositories/user.repository'
 import { UserRegistrationDto } from '../schemas/user.schema'
 import { checkPassword, hashPassword } from '../utils/encryption'
@@ -29,10 +30,15 @@ export class AuthService {
 
   login = async (username: string, password: string) => {
     const user = await this.userRepository.getUserByUsername(username)
+
+    if (!user) {
+      throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS)
+    }
+
     const isPasswordMatch = await checkPassword(password, user.password)
 
-    if (!user || isPasswordMatch === false) {
-      throw new BadRequestException('Wong Username or Password')
+    if (isPasswordMatch === false) {
+      throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS)
     }
 
     const payload = {

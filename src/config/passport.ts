@@ -3,6 +3,7 @@ import passportJWT from 'passport-jwt'
 import { jwtConfig } from './jwt'
 import { User } from '../entities/user.entity'
 import { logger } from '../utils/logger'
+import { ErrorCode } from '../constants/errorCodes'
 
 const JwtStrategy = passportJWT.Strategy
 const ExtractJwt = passportJWT.ExtractJwt
@@ -20,11 +21,11 @@ export function initPassport() {
           if (user) {
             return done(null, user)
           } else {
-            return done(new Error('User not Found'), null)
+            return done(new Error(ErrorCode.USER_NOT_FOUND), null)
           }
         } catch (error) {
           logger.error(error)
-          return done(new Error('User not found'), null)
+          return done(new Error(ErrorCode.JWT_FAILED), null)
         }
       }
     )
