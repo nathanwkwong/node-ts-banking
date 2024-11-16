@@ -19,6 +19,8 @@ export class AuthController {
     }
   }
 
+  // TODO: remove user (condition: remove all account first )
+
   public login = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const { username, password } = req.body as UserLoginDto

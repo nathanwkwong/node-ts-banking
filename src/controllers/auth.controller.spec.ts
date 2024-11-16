@@ -1,37 +1,43 @@
 import request from 'supertest'
 import { TestHelper } from '../__mocks__/dbInstanceHelper'
 import { app } from '../app'
-import { baseRoutePaths } from '../constants/routes'
+import { routes } from '../constants/routes'
 import {
   generateInvalidUserWithInvalidPassword,
   generateInvalidUserWithInvalidEmail,
   generateValidUser,
+  registerUser,
+  loginUser,
 } from '../__mocks__/user'
+import { UserRegistrationDto } from '../schemas/user.schema'
 
-describe('AuthController Test', () => {
+// TODO: set up global jest config, global.ts, e.g. env
+let validUser: UserRegistrationDto
+
+describe('Auth Controller Test', () => {
   beforeAll(async () => {
     process.env.JWT_SECRET = 'dsfsdfsdf'
     await TestHelper.instance.setupTestDB()
+  })
+
+  beforeEach(async () => {
+    validUser = generateValidUser()
   })
 
   afterAll(async () => {
     await TestHelper.instance.teardownTestDB()
   })
 
-  describe('AuthController.createUser', () => {
+  describe('create user', () => {
     it('should create a user successfully', async () => {
-      const response = await request(app)
-        .post(baseRoutePaths.AUTH + '/register')
-        .send(generateValidUser())
+      const response = await registerUser(app, validUser)
 
       expect(response).toBeDefined()
       expect(response.status).toBe(201)
     })
 
     it('should not create a user with invalid email successfully', async () => {
-      const response = await request(app)
-        .post(baseRoutePaths.AUTH + '/register')
-        .send(generateInvalidUserWithInvalidEmail())
+      const response = await request(app).post(routes.auth.register._full).send(generateInvalidUserWithInvalidEmail())
 
       expect(response).toBeDefined()
       expect(response.status).toBe(400)
@@ -39,29 +45,23 @@ describe('AuthController Test', () => {
 
     it('should not create a user with invalid password successfully', async () => {
       const response = await request(app)
-        .post(baseRoutePaths.AUTH + '/register')
+        .post(routes.auth.register._full)
         .send(generateInvalidUserWithInvalidPassword())
 
       expect(response).toBeDefined()
       expect(response.status).toBe(400)
     })
+  })
 
+  describe('login', () => {
     it('should login a user', async () => {
-      const validUser = generateValidUser()
-
-      const response = await request(app)
-        .post(baseRoutePaths.AUTH + '/register')
-        .send(validUser)
+      const response = await registerUser(app, validUser)
 
       expect(response).toBeDefined()
+      console.log('HERE IS: ', response)
       expect(response.status).toBe(201)
 
-      const loginUseRes = await request(app)
-        .post(baseRoutePaths.AUTH + '/login')
-        .send({
-          username: validUser.username,
-          password: validUser.password,
-        })
+      const loginUseRes = await loginUser(app, validUser)
 
       expect(loginUseRes).toBeDefined()
       expect(loginUseRes.status).toBe(200)
