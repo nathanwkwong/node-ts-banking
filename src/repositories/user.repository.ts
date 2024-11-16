@@ -1,35 +1,25 @@
-import { postgresDataSource } from '../config/database'
+import { Repository } from 'typeorm'
 import { User } from '../entities/user.entity'
 import { UserRegistrationDto } from '../schemas/user.schema'
 
 export class UserRepository {
-  getUserByUsername = async (username: string): Promise<User> => {
-    const user = await postgresDataSource
-      .getRepository(User)
-      .createQueryBuilder()
-      .where('username = :username', { username })
-      .getOne()
+  private repository: Repository<User>
 
-    return user
+  constructor(repository: Repository<User>) {
+    this.repository = repository
   }
 
-  getUserByEmail = async (email: string): Promise<User> => {
-    const user = await postgresDataSource
-      .getRepository(User)
-      .createQueryBuilder()
-      .where('email = :email', { email })
-      .getOne()
-
-    return user
+  public getUserByUsername = async (username: string): Promise<User> => {
+    return this.repository.createQueryBuilder().where('username = :username', { username }).getOne()
   }
 
-  createUser = async (userData: UserRegistrationDto) => {
-    const user = await postgresDataSource
-      .createQueryBuilder()
-      .insert()
-      .into(User)
-      .values([{ username: userData.username, email: userData.email, password: userData.password }])
-      .execute()
-    return user
+  public getUserByEmail = async (email: string): Promise<User> => {
+    return this.repository.createQueryBuilder().where('email = :email', { email }).getOne()
+  }
+
+  public createUser = async (userData: UserRegistrationDto) => {
+    const user = await User.insert(userData)
+
+    return user.raw[0].id
   }
 }
