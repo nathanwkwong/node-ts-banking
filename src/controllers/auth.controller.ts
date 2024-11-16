@@ -8,7 +8,7 @@ export class AuthController {
     this.authService = authService
   }
 
-  createUser = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public createUser = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const userData = req.body
       const user = await this.authService.createUser(userData)
@@ -19,7 +19,7 @@ export class AuthController {
     }
   }
 
-  login = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public login = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const { username, password } = req.body as UserLoginDto
       const loginData = await this.authService.login(username, password)
