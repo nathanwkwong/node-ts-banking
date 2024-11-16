@@ -9,7 +9,7 @@ export class AccountController {
     this.accountService = accountService
   }
 
-  createAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public createAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const accountInfo = req.body as AccountCreationDto
 
@@ -21,7 +21,7 @@ export class AccountController {
     }
   }
 
-  getAllAccounts = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public getAllAccounts = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const accounts = await this.accountService.getAllAccounts(req.user as User)
       res.status(200).send(accounts)
@@ -30,7 +30,7 @@ export class AccountController {
     }
   }
 
-  getAccountWithAccountId = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public getAccountWithAccountId = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const { accountId } = req.params as GetAccountParam
 
@@ -41,7 +41,7 @@ export class AccountController {
     }
   }
 
-  deleteAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
+  public deleteAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const { accountId } = req.params as GetAccountParam
 
