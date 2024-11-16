@@ -37,6 +37,9 @@ app.use(errorHandler)
 
 const port = process.env.PORT || 3000
 
-app.listen(port, () => {
-  logger.info(`Server is running on port ${port}`)
-})
+// TODO: refactor logic to handle different environments
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    logger.info(`Server is running on port ${port}`)
+  })
+}

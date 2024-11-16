@@ -14,8 +14,8 @@ describe('AuthController Test', () => {
     await TestHelper.instance.setupTestDB()
   })
 
-  afterAll(() => {
-    TestHelper.instance.teardownTestDB()
+  afterAll(async () => {
+    await TestHelper.instance.teardownTestDB()
   })
 
   describe('AuthController.createUser', () => {

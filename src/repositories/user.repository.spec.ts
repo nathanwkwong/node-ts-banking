@@ -10,8 +10,8 @@ describe('SampleRepository Test', () => {
     await TestHelper.instance.setupTestDB()
   })
 
-  afterAll(() => {
-    TestHelper.instance.teardownTestDB()
+  afterAll(async () => {
+    await TestHelper.instance.teardownTestDB()
   })
 
   beforeEach(() => {

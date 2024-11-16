@@ -38,7 +38,7 @@ export class TestHelper {
     await this.dbConnect.initialize()
   }
 
-  teardownTestDB() {
-    if (this.dbConnect.isInitialized) this.dbConnect.destroy()
+  async teardownTestDB() {
+    if (this.dbConnect.isInitialized) await this.dbConnect.destroy()
   }
 }
