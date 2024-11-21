@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import request from 'supertest'
+import request, { Request } from 'supertest'
 import { routes } from '../constants/routes'
 import { UserLoginDto, UserRegistrationDto } from '../schemas/user.schema'
 import * as core from 'express-serve-static-core'
@@ -26,10 +26,10 @@ export const generateInvalidUserWithInvalidPassword = (): UserRegistrationDto =>
   password: '123456',
 })
 
-export const registerUser = async (app: core.Express, user: UserRegistrationDto) => {
+export const registerUser = async (app: core.Express, user: UserRegistrationDto): Promise<Request> => {
   return await request(app).post(routes.auth.register._full).send(user)
 }
 
-export const loginUser = async (app: core.Express, user: UserLoginDto) => {
+export const loginUser = async (app: core.Express, user: UserLoginDto): Promise<Request> => {
   return await request(app).post(routes.auth.login._full).send(user)
 }

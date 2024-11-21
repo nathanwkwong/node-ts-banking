@@ -21,5 +21,10 @@ export const routes = {
   account: {
     _relative: '/accounts',
     _full: `${BASE_ROUTE_PATH}/accounts`,
+
+    '/:accountId': {
+      _relative: '/:accountId',
+      _full: `${BASE_ROUTE_PATH}/accounts/:accountId`,
+    },
   },
 }
