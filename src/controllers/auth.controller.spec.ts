@@ -58,7 +58,6 @@ describe('Auth Controller Test', () => {
       const response = await registerUser(app, validUser)
 
       expect(response).toBeDefined()
-      console.log('HERE IS: ', response)
       expect(response.status).toBe(201)
 
       const loginUseRes = await loginUser(app, validUser)

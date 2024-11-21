@@ -4,6 +4,6 @@ export class BadRequestException extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'BadRequestException'
-    this.status = 409
+    this.status = 400
   }
 }
