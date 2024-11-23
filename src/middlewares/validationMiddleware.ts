@@ -3,7 +3,7 @@ import { z, ZodTypeAny } from 'zod'
 
 type Source = 'body' | 'params' | 'query'
 
-const validateData = (schema: ZodTypeAny, source: Source) => {
+export const validateData = (schema: ZodTypeAny, source: Source) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse(req[source])

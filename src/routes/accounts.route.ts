@@ -11,7 +11,7 @@ const accountService = new AccountService()
 const accountController = new AccountController(accountService)
 
 // route: /accounts
-accountsRouter.post('/', authGuard, validateRequestBody(AccountCreationSchema), accountController.createAccount)
+accountsRouter.post('/', authGuard, validateRequestBody(AccountCreationSchema), accountController.createAccount) // -> errorHandler
 accountsRouter.get('/', authGuard, accountController.getAllAccounts)
 accountsRouter.get(
   '/:accountId',

@@ -70,7 +70,9 @@ describe('Account Controller Test', () => {
     })
 
     it('should call next with an error if account creation fails', async () => {
-      const error = new Error('Account creation failed')
+      const erroMsg = 'Account creation failed'
+      const error = new Error(erroMsg)
+
       jest.spyOn(accountService, 'createAccount').mockRejectedValue(error)
 
       await accountController.createAccount(req as Request, res as ExpressResponse, next)
@@ -88,6 +90,17 @@ describe('Account Controller Test', () => {
       expect(allAccountResponse.status).toBe(200)
       expect(allAccountResponse.body.length).toBeGreaterThan(0)
     })
+
+    // it('should call next with an error if account creation fails', async () => {
+    //   const erroMsg = 'Account creation failed'
+    //   const error = new Error(erroMsg)
+
+    //   jest.spyOn(accountService, 'getAllAccounts').mockRejectedValue(error)
+
+    //   await accountController.createAccount(req as Request, res as ExpressResponse, next)
+
+    //   expect(next).toHaveBeenCalledWith(error)
+    // })
   })
 
   describe('Get Account with specific account id with a signed in user', () => {
