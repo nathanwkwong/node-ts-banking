@@ -1,7 +1,9 @@
 import { postgresDataSource } from '../config/database'
+import { ACCOUNT_NUMBER_BASE } from '../constants/account'
 import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
 import { AccountCreationDto } from '../schemas/account.schema'
+import { BadRequestException } from '../utils/exceptions/badRequestException'
 
 export class AccountService {
   constructor() {}
@@ -22,7 +24,7 @@ export class AccountService {
 
     const isAccountExists = await this.checkIfTypeAccountExists(user, accountInfo)
     if (isAccountExists) {
-      throw new Error('Account already exists')
+      throw new BadRequestException('Account already exists')
     }
 
     const lastAccount = await postgresDataSource
@@ -32,7 +34,7 @@ export class AccountService {
       .orderBy('account.accountNumber', 'DESC')
       .getOne()
 
-    const accountNumber = lastAccount ? parseInt(lastAccount.accountNumber) + 1 : 100000000000
+    const accountNumber = lastAccount ? parseInt(lastAccount.accountNumber) + 1 : ACCOUNT_NUMBER_BASE
 
     await postgresDataSource
       .createQueryBuilder()

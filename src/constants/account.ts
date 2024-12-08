@@ -11,3 +11,5 @@ export enum AccountStatus {
   PENDING = 'PENDING',
   BLOCKED = 'BLOCKED',
 }
+
+export const ACCOUNT_NUMBER_BASE = 100000000000

@@ -1,10 +1,13 @@
+import { postgresDataSource } from '../config/database'
+import { User } from '../entities/user.entity'
 import { UserRepository } from './user.repository'
 
 class Repository {
   public userRepository: UserRepository
 
   constructor() {
-    this.userRepository = new UserRepository()
+    const userRepo = postgresDataSource.getRepository(User)
+    this.userRepository = new UserRepository(userRepo)
   }
 }
 

@@ -10,6 +10,7 @@ const config: Config = {
   },
   collectCoverageFrom: ['**/*.(t|j)s'],
   coverageDirectory: './coverage',
+  coveragePathIgnorePatterns: ['/src/migrations', 'jest.config.ts', '/dist', '/coverage'],
   coverageThreshold: {
     global: {
       branches: 100,
