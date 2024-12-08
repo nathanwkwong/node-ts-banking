@@ -9,14 +9,17 @@ import passport from 'passport'
 import { accountsRouter } from './routes/accounts.route'
 import { routes } from './constants/routes'
 
-postgresDataSource
-  .initialize()
-  .then(async () => {
+const initDatabase = async () => {
+  try {
+    await postgresDataSource.initialize()
     logger.info('Database initialized')
-  })
-  .catch((err) => {
+  } catch (err) {
+    /* istanbul ignore next */
     logger.info('Error connecting to initialized: ', err)
-  })
+  }
+}
+
+initDatabase()
 
 export const app = express()
 
@@ -37,7 +40,7 @@ app.use(errorHandler)
 
 const port = process.env.PORT || 3000
 
-// TODO: refactor logic to handle different environments
+/* istanbul ignore next */
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     logger.info(`Server is running on port ${port}`)
