@@ -8,6 +8,7 @@ import { initPassport } from './config/passport'
 import passport from 'passport'
 import { accountsRouter } from './routes/accounts.route'
 import { routes } from './constants/routes'
+import { transactionsRouter } from './routes/transactions.route'
 
 const initDatabase = async () => {
   try {
@@ -30,6 +31,7 @@ initPassport()
 
 app.use(routes.auth._full, authRouter)
 app.use(routes.account._full, accountsRouter)
+app.use(routes.account._full, transactionsRouter)
 
 app.get('/', (req, res) => {
   res.status(200)
