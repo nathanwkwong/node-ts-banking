@@ -1,6 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Account } from './account.entity'
 import { AccountCurrency } from '../constants/currency'
+import { TransactionStatus, TransactionType } from '../constants/transaction'
 
 @Entity()
 export class Transaction extends BaseEntity {
@@ -18,9 +19,9 @@ export class Transaction extends BaseEntity {
   @Column('enum', { enum: AccountCurrency, nullable: false })
   currency: AccountCurrency
 
-  @Column()
+  @Column('enum', { enum: TransactionType, nullable: false })
   // e.g. bank, peer-to-peer, refund...
-  transactionType: string
+  transactionType: TransactionType
 
   @Column('decimal', { precision: 10, scale: 2 })
   amount: number
@@ -28,8 +29,7 @@ export class Transaction extends BaseEntity {
   @Column()
   description: string
 
-  @Column()
-  // Pending/Started, Completed
+  @Column('enum', { enum: TransactionStatus, nullable: false })
   status: string
 
   @CreateDateColumn()
