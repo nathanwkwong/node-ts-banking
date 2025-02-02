@@ -1,28 +1,30 @@
 import { postgresDataSource } from '../config/database'
 import { ACCOUNT_NUMBER_BASE } from '../constants/account'
+import { AccountCurrency } from '../constants/currency'
 import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
-import { CreateAccountInfoDto } from '../schemas/account.schema'
+import { AccountInfoDto, CreateAccountInfoDto } from '../schemas/account.schema'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
 
 export class AccountService {
   constructor() {}
 
-  // Accounts with same bank code, account type, currency and user are considered as duplicate
-  checkIfTypeAccountExists = async (user: User, accountInfo: AccountCreationDto): Promise<boolean> => {
-    const { accountType, currency, bankCode } = accountInfo
+  getAccountInfo = async (accountInfo: Partial<AccountInfoDto>, user?: User): Promise<Account> => {
+    const { accountType, currency, bankCode, accountNumber } = accountInfo
 
-    const account = await Account.findOne({
-      where: { user: { id: user.id }, accountType, currency, bankCode },
+    const userClause = user ? { user: { id: user.id } } : {}
+
+    const account: Account = await Account.findOne({
+      where: { accountType, currency, bankCode, accountNumber, ...userClause },
     })
 
-    return !!account
+    return account
   }
 
   createAccount = async (user: User, accountInfo: CreateAccountInfoDto) => {
     const { accountType, currency, status, branchCode, bankCode } = accountInfo
 
-    const isAccountExists = await this.checkIfTypeAccountExists(user, accountInfo)
+    const isAccountExists = !!(await this.getAccountInfo(accountInfo, user))
     if (isAccountExists) {
       throw new BadRequestException('Account already exists')
     }
@@ -67,6 +69,18 @@ export class AccountService {
         select: ['id', 'accountNumber', 'balance', 'currency', 'accountType', 'status'],
       })
     )[0]
+  }
+
+  getAccountWithAccountNumber = async (
+    user: User,
+    accountNumber: string,
+    bankCode: string,
+    branchCode: string,
+    currency: AccountCurrency
+  ): Promise<Account> => {
+    return await Account.findOne({
+      where: { user: { id: user.id }, accountNumber, bankCode, branchCode, currency },
+    })
   }
 
   deleteAccount = async (user: User, accountId: string) => {

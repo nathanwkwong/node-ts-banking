@@ -17,4 +17,13 @@ export class TransactionController {
       next(error)
     }
   }
+
+  transfer = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    try {
+      const transaction = await this.transactionService.transfer(req.user as User, req.body)
+      res.status(201).send(transaction)
+    } catch (error) {
+      next(error)
+    }
+  }
 }
