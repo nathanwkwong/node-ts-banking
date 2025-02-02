@@ -10,7 +10,7 @@ export const AccountCreationSchema = z.object({
   bankCode: z.string(),
   branchCode: z.string(),
 })
-export type AccountCreationDto = z.infer<typeof AccountCreationSchema>
+export type CreateAccountInfoDto = z.infer<typeof AccountCreationSchema>
 
 export const GetAccountWithAccountIdSchema = z.object({
   accountId: z.string().uuid(),

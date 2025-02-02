@@ -2,7 +2,7 @@ import { postgresDataSource } from '../config/database'
 import { ACCOUNT_NUMBER_BASE } from '../constants/account'
 import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
-import { AccountCreationDto } from '../schemas/account.schema'
+import { CreateAccountInfoDto } from '../schemas/account.schema'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
 
 export class AccountService {
@@ -19,7 +19,7 @@ export class AccountService {
     return !!account
   }
 
-  createAccount = async (user: User, accountInfo: AccountCreationDto) => {
+  createAccount = async (user: User, accountInfo: CreateAccountInfoDto) => {
     const { accountType, currency, status, branchCode, bankCode } = accountInfo
 
     const isAccountExists = await this.checkIfTypeAccountExists(user, accountInfo)
