@@ -3,7 +3,7 @@ import { TestHelper } from '../__mocks__/dbInstanceHelper'
 import { app } from '../app'
 import { routes } from '../constants/routes'
 import { generateValidUser, loginUser, registerUser } from '../__mocks__/user'
-import { AccountCreationDto } from '../schemas/account.schema'
+import { CreateAccountInfoDto } from '../schemas/account.schema'
 import { AccountStatus, AccountType } from '../constants/account'
 import { AccountCurrency } from '../constants/currency'
 import { UserRegistrationDto } from '../schemas/user.schema'
@@ -32,7 +32,7 @@ describe('Account Controller Test', () => {
 
   describe('Create Account', () => {
     it('should create account with a registered user and not avoid to create the same type of account twice', async () => {
-      const accountInfo: AccountCreationDto = {
+      const accountInfo: CreateAccountInfoDto = {
         username: user.username,
         accountType: AccountType.SAVING,
         currency: AccountCurrency.HKD,

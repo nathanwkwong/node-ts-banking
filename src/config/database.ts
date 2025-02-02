@@ -13,3 +13,5 @@ export const postgresDataSource = new DataSource({
   logging: true,
   synchronize: false,
 })
+
+export const entityManager = postgresDataSource.manager
