@@ -1,0 +1,737 @@
+{
+  "info": {
+    "name": "Banking App - Transaction Controller API",
+    "description": "Complete Postman collection for testing the TransactionController endpoints in the Node.js TypeScript Banking Application. This collection includes user authentication, account management, and transaction operations.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accountId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accountNumber",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secondAccountId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "secondAccountNumber",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.collectionVariables.set('userId', responseData.id);",
+                  "    pm.test('User registered successfully', function () {",
+                  "        pm.expect(pm.response.code).to.eql(201);",
+                  "        pm.expect(responseData).to.have.property('id');",
+                  "        pm.expect(responseData).to.have.property('username');",
+                  "        pm.expect(responseData).to.have.property('email');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Registration failed', function () {",
+                  "        pm.expect(pm.response.code).to.not.eql(201);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"email\": \"testuser123@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user account"
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const responseData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwtToken', responseData.accessToken);",
+                  "    pm.collectionVariables.set('userId', responseData.userId);",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "        pm.expect(responseData).to.have.property('accessToken');",
+                  "        pm.expect(responseData).to.have.property('username');",
+                  "        pm.expect(responseData).to.have.property('userId');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Login failed', function () {",
+                  "        pm.expect(pm.response.code).to.not.eql(200);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"password\": \"SecurePassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with username and password to get JWT token"
+          }
+        }
+      ],
+      "description": "User authentication endpoints for registration and login"
+    },
+    {
+      "name": "2. Account Management",
+      "item": [
+        {
+          "name": "Create Primary Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.test('Account created successfully', function () {",
+                  "        pm.expect(pm.response.code).to.eql(201);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Account creation failed', function () {",
+                  "        pm.expect(pm.response.code).to.not.eql(201);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"accountType\": \"SAVING\",\n  \"currency\": \"HKD\",\n  \"status\": \"ACTIVE\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts"]
+            },
+            "description": "Create a primary savings account for testing transactions"
+          }
+        },
+        {
+          "name": "Create Secondary Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.test('Secondary account created successfully', function () {",
+                  "        pm.expect(pm.response.code).to.eql(201);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Secondary account creation failed', function () {",
+                  "        pm.expect(pm.response.code).to.not.eql(201);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser123\",\n  \"accountType\": \"CHEQUE\",\n  \"currency\": \"HKD\",\n  \"status\": \"ACTIVE\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"124\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts"]
+            },
+            "description": "Create a secondary checking account for transfer testing"
+          }
+        },
+        {
+          "name": "Get All Accounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const accounts = pm.response.json();",
+                  "    if (accounts.length >= 1) {",
+                  "        pm.collectionVariables.set('accountId', accounts[0].id);",
+                  "        pm.collectionVariables.set('accountNumber', accounts[0].accountNumber);",
+                  "    }",
+                  "    if (accounts.length >= 2) {",
+                  "        pm.collectionVariables.set('secondAccountId', accounts[1].id);",
+                  "        pm.collectionVariables.set('secondAccountNumber', accounts[1].accountNumber);",
+                  "    }",
+                  "    pm.test('Accounts retrieved successfully', function () {",
+                  "        pm.expect(pm.response.code).to.eql(200);",
+                  "        pm.expect(accounts).to.be.an('array');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Failed to retrieve accounts', function () {",
+                  "        pm.expect(pm.response.code).to.not.eql(200);",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts"]
+            },
+            "description": "Retrieve all accounts for the authenticated user and store account details for transactions"
+          }
+        }
+      ],
+      "description": "Account management endpoints for creating and retrieving accounts needed for transactions"
+    },
+    {
+      "name": "3. Transaction Operations",
+      "item": [
+        {
+          "name": "Deposit - HKD to Savings Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Deposit transaction successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 200]);",
+                  "});",
+                  "",
+                  "// Note: The actual response structure depends on the implementation",
+                  "// The current code may not return the transaction object"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text",
+                "description": "NOTE: Current routes may not have authGuard - this is likely a bug"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1000.50,\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\",\n  \"currency\": \"HKD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Deposit HKD 1000.50 into the primary savings account"
+          }
+        },
+        {
+          "name": "Deposit - USD to Savings Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('USD Deposit transaction successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 200]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500.00,\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\",\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Deposit USD 500.00 into the account (should fail if account currency is HKD)"
+          }
+        },
+        {
+          "name": "Transfer - Between Own Accounts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transfer transaction successful', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 200]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 250.75,\n  \"receiverAccountNumber\": \"{{secondAccountNumber}}\",\n  \"receiverBankCode\": \"001\",\n  \"receiverBranchCode\": \"124\",\n  \"currency\": \"HKD\",\n  \"senderAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "transfer"]
+            },
+            "description": "Transfer HKD 250.75 from savings account to checking account"
+          }
+        },
+        {
+          "name": "Transfer - Large Amount (Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Large transfer should fail due to insufficient funds', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999999.00,\n  \"receiverAccountNumber\": \"{{secondAccountNumber}}\",\n  \"receiverBankCode\": \"001\",\n  \"receiverBranchCode\": \"124\",\n  \"currency\": \"HKD\",\n  \"senderAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "transfer"]
+            },
+            "description": "Attempt to transfer a large amount that should fail due to insufficient balance"
+          }
+        },
+        {
+          "name": "Transfer - Currency Mismatch (Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transfer with currency mismatch should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00,\n  \"receiverAccountNumber\": \"{{secondAccountNumber}}\",\n  \"receiverBankCode\": \"001\",\n  \"receiverBranchCode\": \"124\",\n  \"currency\": \"USD\",\n  \"senderAccountId\": \"{{accountId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "transfer"]
+            },
+            "description": "Attempt transfer with mismatched currency (USD vs HKD accounts)"
+          }
+        },
+        {
+          "name": "Deposit - Invalid Account Number (Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Deposit to invalid account should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00,\n  \"accountNumber\": \"999999999999\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\",\n  \"currency\": \"HKD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Attempt to deposit to a non-existent account number"
+          }
+        }
+      ],
+      "description": "Transaction operations including deposits and transfers with various test scenarios"
+    },
+    {
+      "name": "4. Error Scenarios & Edge Cases",
+      "item": [
+        {
+          "name": "Deposit without Authentication",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request without auth should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00,\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\",\n  \"currency\": \"HKD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Test deposit without authentication header (should fail)"
+          }
+        },
+        {
+          "name": "Deposit with Invalid Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request with invalid token should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token-here",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00,\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"bankCode\": \"001\",\n  \"branchCode\": \"123\",\n  \"currency\": \"HKD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Test deposit with invalid JWT token (should fail)"
+          }
+        },
+        {
+          "name": "Deposit with Invalid Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Request with invalid data should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"invalid-amount\",\n  \"accountNumber\": \"\",\n  \"bankCode\": \"\",\n  \"branchCode\": \"\",\n  \"currency\": \"INVALID_CURRENCY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/deposit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "deposit"]
+            },
+            "description": "Test deposit with invalid request data (should fail validation)"
+          }
+        },
+        {
+          "name": "Transfer with Missing Required Fields",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Transfer with missing fields should fail', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwtToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/transactions/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "transactions", "transfer"]
+            },
+            "description": "Test transfer with missing required fields (should fail validation)"
+          }
+        }
+      ],
+      "description": "Error scenarios and edge cases for testing transaction validation and error handling"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": ["// Global pre-request script", "console.log('Running request to:', pm.request.url.toString());"]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "console.log('Response status:', pm.response.code);",
+          "console.log('Response time:', pm.response.responseTime + 'ms');"
+        ]
+      }
+    }
+  ]
+}

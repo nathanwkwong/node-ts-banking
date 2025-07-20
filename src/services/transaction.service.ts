@@ -6,6 +6,8 @@ import { User } from '../entities/user.entity'
 import { AccountDepositDto, AccountTransferDto } from '../schemas/transaction.schema'
 import { TransactionData } from '../types/transaction.interface'
 import { AccountService } from './account.service'
+import { BadRequestException } from '../utils/exceptions/badRequestException'
+import { logger } from '../utils/logger'
 
 export class TransactionService {
   private accountService: AccountService
@@ -13,7 +15,7 @@ export class TransactionService {
     this.accountService = new AccountService()
   }
 
-  public deposit = async (depositUser: User, depositInfo: AccountDepositDto) => {
+  public deposit = async (depositUser: User, depositInfo: AccountDepositDto): Promise<Transaction> => {
     const transactionInfo: TransactionData = {
       accountNumber: depositInfo.accountNumber,
       bankCode: depositInfo.bankCode,
@@ -22,10 +24,13 @@ export class TransactionService {
       amount: depositInfo.amount,
       transactionType: TransactionType.DEPOSIT,
     }
-    await this.transaction(depositUser, transactionInfo)
+
+    console.log('transactionInfo', transactionInfo)
+
+    return await this.transaction(depositUser, transactionInfo)
   }
 
-  public withdraw = async (withdrawUser: User, withdrawInfo: AccountDepositDto) => {
+  public withdraw = async (withdrawUser: User, withdrawInfo: AccountDepositDto): Promise<Transaction> => {
     const transactionInfo: TransactionData = {
       accountNumber: withdrawInfo.accountNumber,
       bankCode: withdrawInfo.bankCode,
@@ -34,103 +39,132 @@ export class TransactionService {
       amount: withdrawInfo.amount,
       transactionType: TransactionType.WITHDRAW,
     }
-    await this.transaction(withdrawUser, transactionInfo)
+
+    return await this.transaction(withdrawUser, transactionInfo)
   }
 
-  private transaction = async (user: User, transactionInfo: TransactionData) => {
-    try {
-      const { accountNumber, bankCode, branchCode, currency, amount, transactionType } = transactionInfo
-      const userAccount = await this.accountService.getAccountWithAccountNumber(
-        user,
-        accountNumber,
-        bankCode,
-        branchCode,
-        currency
-      )
+  private transaction = async (user: User, transactionInfo: TransactionData): Promise<Transaction> => {
+    const { accountNumber, bankCode, branchCode, currency, amount, transactionType } = transactionInfo
 
-      if (!userAccount) {
-        throw new Error('Account not found')
-      }
+    const userAccount = await this.accountService.getAccountWithAccountNumber(
+      user,
+      accountNumber,
+      bankCode,
+      branchCode,
+      currency
+    )
 
-      if (userAccount.status !== AccountStatus.ACTIVE) {
-        throw new Error('Account is not active')
-      }
+    logger.info('log: Transaction info', {
+      accountNumber,
+      bankCode,
+      branchCode,
+      currency,
+      amount,
+    })
 
-      await entityManager.transaction(async (transactionalEntityManager) => {
-        // update user account balance
-        userAccount.balance += transactionInfo.amount
-        await transactionalEntityManager.save(userAccount)
-
-        const signedAmount = transactionType === TransactionType.WITHDRAW ? -amount : amount
-
-        // create transaction history
-        const transaction = new Transaction()
-        transaction.transactionType = transactionType
-        transaction.amount = signedAmount
-        transaction.status = TransactionStatus.COMPLETED
-        transaction.currency = currency
-        transaction.receiver = userAccount
-        transaction.sender = userAccount
-        transaction.description = 'Deposit money'
-        await transactionalEntityManager.save(transaction)
-      })
-    } catch (error) {
-      console.error(error)
+    if (!userAccount) {
+      throw new BadRequestException('Account not found')
     }
+
+    if (userAccount.status !== AccountStatus.ACTIVE) {
+      throw new BadRequestException('Account is not active')
+    }
+
+    // Check for sufficient funds for withdrawal
+    if (transactionType === TransactionType.WITHDRAW && userAccount.balance < amount) {
+      throw new BadRequestException('Insufficient balance')
+    }
+
+    let savedTransaction: Transaction
+
+    await entityManager.transaction(async (transactionalEntityManager) => {
+      // Update user account balance
+      const signedAmount = transactionType === TransactionType.WITHDRAW ? -amount : amount
+      userAccount.balance = userAccount.balance + signedAmount
+      await transactionalEntityManager.save(userAccount)
+
+      // Create transaction history
+      const transaction = new Transaction()
+      transaction.transactionType = transactionType
+      transaction.amount = signedAmount
+      transaction.status = TransactionStatus.COMPLETED
+      transaction.currency = currency
+      transaction.receiver = userAccount
+      transaction.sender = userAccount
+      transaction.description = transactionType === TransactionType.DEPOSIT ? 'Deposit money' : 'Withdraw money'
+
+      savedTransaction = await transactionalEntityManager.save(transaction)
+    })
+
+    return savedTransaction!
   }
 
-  public transfer = async (senderUser: User, transferInfo: AccountTransferDto) => {
-    try {
-      // check sender account is under senderUser exist
-      const transferSenderAccountId = transferInfo.senderAccountId
-      const senderAccount = await this.accountService.getAccountWithAccountId(senderUser, transferSenderAccountId)
-      if (!senderAccount) {
-        throw new Error('Sender account not match')
-      }
-
-      // check sender account status as active
-      if (senderAccount.status !== AccountStatus.ACTIVE) {
-        throw new Error('Sender account is not active')
-      }
-
-      // check sender have enough amount
-      if (senderAccount.balance < transferInfo.amount) {
-        throw new Error('Insufficient balance')
-      }
-      // check receiver account is exist (mapping with bank code, branch code, account number)
-      const accountInfo = {
-        accountNumber: transferInfo.receiverAccountNumber,
-        bankCode: transferInfo.receiverBankCode,
-        branchCode: transferInfo.receiverBranchCode,
-        currency: transferInfo.currency,
-      }
-      const receiverAccount = await this.accountService.getAccountInfo(accountInfo)
-
-      if (!receiverAccount) {
-        throw new Error('Receiver account not found')
-      }
-      // check receiver account status as active
-      if (receiverAccount.status !== AccountStatus.ACTIVE) {
-        throw new Error('Receiver account is not active')
-      }
-      // check receiver account currency is same as sender account currency
-      if (receiverAccount.currency !== senderAccount.currency) {
-        throw new Error('Currency not match')
-      }
-      // send money to receiver (update sender account balance, update receiver account balance)
-      // TODO: verify below the logic from Github Copilot
-      // TODO: run local test and pass all success cases
-      // await entityManager.transaction(async (transactionalEntityManager) => {
-      //   // update sender account balance
-      //   senderAccount.balance -= transferInfo.amount
-      //   await transactionalEntityManager.save(senderAccount)
-
-      //   // update receiver account balance
-      //   receiverAccount.balance += transferInfo.amount
-      //   await transactionalEntityManager.save(receiverAccount)
-      // })
-    } catch (error) {
-      console.error(error)
+  public transfer = async (senderUser: User, transferInfo: AccountTransferDto): Promise<Transaction> => {
+    // Check sender account exists and belongs to user
+    const transferSenderAccountId = transferInfo.senderAccountId
+    const senderAccount = await this.accountService.getAccountWithAccountId(senderUser, transferSenderAccountId)
+    if (!senderAccount) {
+      throw new BadRequestException('Sender account not found')
     }
+
+    // Check sender account status is active
+    if (senderAccount.status !== AccountStatus.ACTIVE) {
+      throw new BadRequestException('Sender account is not active')
+    }
+
+    // Check sender has enough balance
+    if (senderAccount.balance < transferInfo.amount) {
+      throw new BadRequestException('Insufficient balance')
+    }
+
+    // Check receiver account exists
+    const accountInfo = {
+      accountNumber: transferInfo.receiverAccountNumber,
+      bankCode: transferInfo.receiverBankCode,
+      branchCode: transferInfo.receiverBranchCode,
+      currency: transferInfo.currency,
+    }
+    const receiverAccount = await this.accountService.getAccountInfo(accountInfo)
+
+    if (!receiverAccount) {
+      throw new BadRequestException('Receiver account not found')
+    }
+
+    // Check receiver account status is active
+    if (receiverAccount.status !== AccountStatus.ACTIVE) {
+      throw new BadRequestException('Receiver account is not active')
+    }
+
+    // Check currencies match
+    if (receiverAccount.currency !== senderAccount.currency) {
+      throw new BadRequestException('Currency mismatch between sender and receiver accounts')
+    }
+
+    let savedTransaction: Transaction
+
+    // Execute transfer in transaction
+    await entityManager.transaction(async (transactionalEntityManager) => {
+      // Update sender account balance
+      senderAccount.balance -= transferInfo.amount
+      await transactionalEntityManager.save(senderAccount)
+
+      // Update receiver account balance
+      receiverAccount.balance += transferInfo.amount
+      await transactionalEntityManager.save(receiverAccount)
+
+      // Create transaction record
+      const transaction = new Transaction()
+      transaction.transactionType = TransactionType.TRANSFER
+      transaction.amount = transferInfo.amount
+      transaction.status = TransactionStatus.COMPLETED
+      transaction.currency = transferInfo.currency
+      transaction.receiver = receiverAccount
+      transaction.sender = senderAccount
+      transaction.description = `Transfer from ${senderAccount.accountNumber} to ${receiverAccount.accountNumber}`
+
+      savedTransaction = await transactionalEntityManager.save(transaction)
+    })
+
+    return savedTransaction!
   }
 }

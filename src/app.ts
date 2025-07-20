@@ -31,7 +31,7 @@ initPassport()
 
 app.use(routes.auth._full, authRouter)
 app.use(routes.account._full, accountsRouter)
-app.use(routes.account._full, transactionsRouter)
+app.use(routes.transaction._full, transactionsRouter)
 
 app.get('/', (req, res) => {
   res.status(200)
