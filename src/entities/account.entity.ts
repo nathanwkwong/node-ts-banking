@@ -10,6 +10,7 @@ import {
 import { User } from './user.entity'
 import { AccountCurrency } from '../constants/currency'
 import { AccountStatus, AccountType } from '../constants/account'
+import { DecimalTransformer } from '../utils/transformers/decimal.transformer'
 
 @Entity()
 export class Account extends BaseEntity {
@@ -32,7 +33,7 @@ export class Account extends BaseEntity {
   @Column('enum', { enum: AccountCurrency, default: AccountCurrency.HKD, nullable: false })
   currency: AccountCurrency
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2, transformer: new DecimalTransformer() })
   balance: number
 
   @Column('enum', { enum: AccountType, default: AccountType.SAVING, nullable: false })
