@@ -1,6 +1,6 @@
 import express, { NextFunction } from 'express'
 import { TransactionService } from '../services/transaction.service'
-import { AccountDepositDto } from '../schemas/transaction.schema'
+import { AccountDepositDto, AccountWithdrawDto } from '../schemas/transaction.schema'
 import { User } from '../entities/user.entity'
 
 export class TransactionController {
@@ -21,6 +21,15 @@ export class TransactionController {
   transfer = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
       const transaction = await this.transactionService.transfer(req.user as User, req.body)
+      res.status(201).send(transaction)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  withdraw = async (req: express.Request, res: express.Response, next: NextFunction) => {
+    try {
+      const transaction = await this.transactionService.withdraw(req.user as User, req.body as AccountWithdrawDto)
       res.status(201).send(transaction)
     } catch (error) {
       next(error)
