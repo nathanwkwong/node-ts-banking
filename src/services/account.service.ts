@@ -3,8 +3,9 @@ import { ACCOUNT_NUMBER_BASE } from '../constants/account'
 import { AccountCurrency } from '../constants/currency'
 import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
-import { AccountInfoDto, CreateAccountInfoDto } from '../schemas/account.schema'
+import { AccountInfoDto, CreateAccountInfoDto, ModifyAccountStatusDto } from '../schemas/account.schema'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
+import { AccountAudit } from '../entities/account-audit.entity'
 
 export class AccountService {
   constructor() {}
@@ -83,7 +84,33 @@ export class AccountService {
     })
   }
 
-  deleteAccount = async (user: User, accountId: string) => {
-    await Account.delete({ id: accountId, user: { id: user.id } })
+  modifyAccountStatus = async (user: User, accountId: string, modifyAccountInfo: ModifyAccountStatusDto) => {
+    return await postgresDataSource.transaction(async (transactionalEntityManager) => {
+      const account = await transactionalEntityManager.findOne(Account, {
+        where: { id: accountId, user: { id: user.id } },
+      })
+
+      const { status, description } = modifyAccountInfo
+
+      if (!account) {
+        throw new BadRequestException('Account not found')
+      }
+
+      const fromStatus = account.status
+      account.status = status
+
+      await transactionalEntityManager.save(account)
+
+      const auditLog = new AccountAudit()
+      auditLog.account = account
+      auditLog.fromStatus = fromStatus
+      auditLog.toStatus = status
+      auditLog.changedBy = user
+      auditLog.description = description
+
+      await transactionalEntityManager.save(auditLog)
+
+      return account
+    })
   }
 }

@@ -3,7 +3,11 @@ import { AccountService } from '../services/account.service'
 import { AccountController } from '../controllers/account.controller'
 import { authGuard } from '../middlewares/authGuard'
 import { validateRequestBody, validateRequestParams } from '../middlewares/validationMiddleware'
-import { AccountCreationSchema, GetAccountWithAccountIdSchema } from '../schemas/account.schema'
+import {
+  AccountCreationSchema,
+  GetAccountWithAccountIdSchema,
+  ModifyAccountStatusSchema,
+} from '../schemas/account.schema'
 
 export const accountsRouter = Router()
 
@@ -20,9 +24,10 @@ accountsRouter.get(
   accountController.getAccountWithAccountId
 )
 
-accountsRouter.delete(
+accountsRouter.patch(
   '/:accountId',
   authGuard,
   validateRequestParams(GetAccountWithAccountIdSchema),
-  accountController.deleteAccount
+  validateRequestBody(ModifyAccountStatusSchema),
+  accountController.modifyAccountStatus
 )

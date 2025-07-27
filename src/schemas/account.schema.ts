@@ -10,6 +10,13 @@ export const AccountCreationSchema = z.object({
   bankCode: z.string(),
   branchCode: z.string(),
 })
+
+export const ModifyAccountStatusSchema = z.object({
+  status: z.nativeEnum(AccountStatus),
+  description: z.string().optional(),
+})
+
+export type ModifyAccountStatusDto = z.infer<typeof ModifyAccountStatusSchema>
 export type CreateAccountInfoDto = z.infer<typeof AccountCreationSchema>
 
 export type AccountInfoDto = z.infer<typeof AccountCreationSchema> & {

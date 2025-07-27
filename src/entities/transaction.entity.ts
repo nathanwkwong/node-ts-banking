@@ -27,7 +27,7 @@ export class Transaction extends BaseEntity {
   @Column('decimal', { precision: 10, scale: 2, transformer: new DecimalTransformer() })
   amount: number
 
-  @Column()
+  @Column({ type: 'text', nullable: true })
   description: string
 
   @Column('enum', { enum: TransactionStatus, nullable: false })
