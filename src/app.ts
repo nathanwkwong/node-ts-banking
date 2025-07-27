@@ -9,6 +9,7 @@ import passport from 'passport'
 import { accountsRouter } from './routes/accounts.route'
 import { routes } from './constants/routes'
 import { transactionsRouter } from './routes/transactions.route'
+import { notFoundHandler } from './middlewares/notFoundHandler'
 
 const initDatabase = async () => {
   try {
@@ -38,6 +39,7 @@ app.get('/', (req, res) => {
   res.send()
 })
 
+app.use(notFoundHandler)
 app.use(errorHandler)
 
 const port = process.env.PORT || 3000
