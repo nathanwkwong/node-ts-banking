@@ -3,8 +3,14 @@ import { TransactionService } from '../services/transaction.service'
 import { TransactionController } from '../controllers/transaction.controller'
 import { routes } from '../constants/routes'
 import { authGuard } from '../middlewares/authGuard'
-import { validateRequestBody } from '../middlewares/validationMiddleware'
-import { AccountDepositSchema, AccountTransferSchema, AccountWithdrawSchema } from '../schemas/transaction.schema'
+import { validateRequestBody, validateRequestParams, validateRequestQuery } from '../middlewares/validationMiddleware'
+import {
+  AccountDepositSchema,
+  AccountHistorySchema,
+  AccountIdSchema,
+  AccountTransferSchema,
+  AccountWithdrawSchema,
+} from '../schemas/transaction.schema'
 
 export const transactionsRouter = Router()
 
@@ -33,8 +39,10 @@ transactionsRouter.patch(
   transactionController.withdraw
 )
 
-// transactionsRouter.get(
-//   routes.transaction.history._relative,
-//   authGuard,
-//   transactionController.getHistory
-// )
+transactionsRouter.get(
+  routes.transaction.history._relative + '/:accountId',
+  authGuard,
+  validateRequestParams(AccountIdSchema),
+  validateRequestQuery(AccountHistorySchema),
+  transactionController.transactionHistory
+)

@@ -3,7 +3,7 @@ import { AccountStatus } from '../constants/account'
 import { TransactionStatus, TransactionType } from '../constants/transaction'
 import { Transaction } from '../entities/transaction.entity'
 import { User } from '../entities/user.entity'
-import { AccountDepositDto, AccountTransferDto } from '../schemas/transaction.schema'
+import { AccountDepositDto, AccountHistoryDto, AccountTransferDto } from '../schemas/transaction.schema'
 import { TransactionData } from '../types/transaction.interface'
 import { AccountService } from './account.service'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
@@ -24,8 +24,6 @@ export class TransactionService {
       amount: depositInfo.amount,
       transactionType: TransactionType.DEPOSIT,
     }
-
-    console.log('transactionInfo', transactionInfo)
 
     return await this.transaction(depositUser, transactionInfo)
   }
@@ -166,5 +164,27 @@ export class TransactionService {
     })
 
     return savedTransaction!
+  }
+
+  public transactionHistory = async (
+    user: User,
+    accountId: string,
+    transactionAccountInfo: AccountHistoryDto
+  ): Promise<Transaction[]> => {
+    const { page = 1, limit = 10 } = transactionAccountInfo
+
+    const userAccount = await this.accountService.getAccountWithAccountId(user, accountId)
+
+    if (!userAccount) {
+      throw new BadRequestException('Account not found')
+    }
+
+    const transactions = await Transaction.find({
+      where: { receiver: { id: userAccount.id } },
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+
+    return transactions
   }
 }
