@@ -1,5 +1,5 @@
 import { postgresDataSource } from '../config/database'
-import { ACCOUNT_NUMBER_BASE } from '../constants/account'
+import { ACCOUNT_NUMBER_BASE, AccountStatus } from '../constants/account'
 import { AccountCurrency } from '../constants/currency'
 import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
@@ -83,7 +83,9 @@ export class AccountService {
     })
   }
 
-  deleteAccount = async (user: User, accountId: string) => {
-    await Account.delete({ id: accountId, user: { id: user.id } })
+  modifyAccountStatus = async (user: User, accountId: string, status: AccountStatus) => {
+    await Account.update({ id: accountId, user: { id: user.id } }, { status })
+
+    return await this.getAccountWithAccountId(user, accountId)
   }
 }
