@@ -1,5 +1,8 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Account } from './account.entity'
+import { AccountCurrency } from '../constants/currency'
+import { TransactionStatus, TransactionType } from '../constants/transaction'
+import { DecimalTransformer } from '../utils/transformers/decimal.transformer'
 
 @Entity()
 export class Transaction extends BaseEntity {
@@ -7,18 +10,27 @@ export class Transaction extends BaseEntity {
   id: string
 
   @ManyToOne(() => Account)
-  account: Account
+  @JoinColumn({ name: 'receiverAccountId' })
+  receiver: Account
 
-  @Column()
-  transactionType: string
+  @ManyToOne(() => Account)
+  @JoinColumn({ name: 'senderAccountId' })
+  sender: Account
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('enum', { enum: AccountCurrency, nullable: false })
+  currency: AccountCurrency
+
+  @Column('enum', { enum: TransactionType, nullable: false })
+  // e.g. bank, peer-to-peer, refund...
+  transactionType: TransactionType
+
+  @Column('decimal', { precision: 10, scale: 2, transformer: new DecimalTransformer() })
   amount: number
 
   @Column()
   description: string
 
-  @Column()
+  @Column('enum', { enum: TransactionStatus, nullable: false })
   status: string
 
   @CreateDateColumn()

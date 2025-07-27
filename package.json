@@ -18,12 +18,12 @@
     "test:coverage": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./jest-e2e.json",
-    "typeorm": "typeorm-ts-node-esm",
-    "migrate:gen": "typeorm-ts-node-esm migration:generate src/migrations/migration -d src/config/database.ts",
-    "migrate:up": "typeorm-ts-node-esm migration:run -d src/config/database.ts",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migrate:gen": "typeorm-ts-node-commonjs migration:generate src/migrations/migration -d src/config/database.ts",
+    "migrate:up": "typeorm-ts-node-commonjs migration:run -d src/config/database.ts",
     "migrate:genUp": "npm run migrate:gen && npm run migrate:up",
-    "migrate:revert": "typeorm-ts-node-esm migration:revert -d src/config/database.ts",
-    "migrate:drop": "typeorm-ts-node-esm schema:drop -d src/config/database.ts && rm -R src/migrations",
+    "migrate:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/database.ts",
+    "migrate:drop": "typeorm-ts-node-commonjs schema:drop -d src/config/database.ts && rm -R src/migrations",
     "prepare": "husky"
   },
   "repository": {

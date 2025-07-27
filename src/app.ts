@@ -8,6 +8,8 @@ import { initPassport } from './config/passport'
 import passport from 'passport'
 import { accountsRouter } from './routes/accounts.route'
 import { routes } from './constants/routes'
+import { transactionsRouter } from './routes/transactions.route'
+import { notFoundHandler } from './middlewares/notFoundHandler'
 
 const initDatabase = async () => {
   try {
@@ -30,12 +32,14 @@ initPassport()
 
 app.use(routes.auth._full, authRouter)
 app.use(routes.account._full, accountsRouter)
+app.use(routes.transaction._full, transactionsRouter)
 
 app.get('/', (req, res) => {
   res.status(200)
   res.send()
 })
 
+app.use(notFoundHandler)
 app.use(errorHandler)
 
 const port = process.env.PORT || 3000

@@ -1,6 +1,6 @@
 import express, { NextFunction } from 'express'
 import { AccountService } from '../services/account.service'
-import { AccountCreationDto, GetAccountParam } from '../schemas/account.schema'
+import { CreateAccountInfoDto, GetAccountParam } from '../schemas/account.schema'
 import { User } from '../entities/user.entity'
 
 export class AccountController {
@@ -11,7 +11,7 @@ export class AccountController {
 
   public createAccount = async (req: express.Request, res: express.Response, next: NextFunction) => {
     try {
-      const accountInfo = req.body as AccountCreationDto
+      const accountInfo = req.body as CreateAccountInfoDto
 
       const account = await this.accountService.createAccount(req.user as User, accountInfo)
 
