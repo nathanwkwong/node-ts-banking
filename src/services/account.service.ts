@@ -5,7 +5,7 @@ import { Account } from '../entities/account.entity'
 import { User } from '../entities/user.entity'
 import { AccountInfoDto, CreateAccountInfoDto, ModifyAccountStatusDto } from '../schemas/account.schema'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
-import { AccountAudit } from '../entities/account-audit.entity'
+import { AccountAudit } from '../entities/accountAudit.entity'
 
 export class AccountService {
   constructor() {}

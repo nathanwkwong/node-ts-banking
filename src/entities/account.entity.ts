@@ -20,7 +20,6 @@ export class Account extends BaseEntity {
   @ManyToOne(() => User)
   user: User
 
-  // make this column required
   @Column({ nullable: false })
   bankCode: string
 

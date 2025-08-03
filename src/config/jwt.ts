@@ -13,7 +13,7 @@ export interface AccessTokenInfo extends JwtPayload {
 interface JwtConfig {
   jwtSecret: string
   jwtSession: {
-    expiresIn: string
+    expiresInSec: string
     session: boolean
   }
 }
@@ -21,7 +21,7 @@ interface JwtConfig {
 export const jwtConfig: JwtConfig = {
   jwtSecret: process.env.JWT_SECRET,
   jwtSession: {
-    expiresIn: process.env.JWT_SESSION_EXPIRES_IN,
+    expiresInSec: process.env.JWT_SESSION_EXPIRES_IN_SEC,
     session: false,
   },
 }
