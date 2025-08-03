@@ -1,9 +1,9 @@
 import { Request } from 'express'
 import crypto from 'crypto'
-import { AuthenticationAudit } from '../entities/authenticationAudit.entity'
-import { User } from '../entities/user.entity'
-import { AuthenticationEventType, DeviceType } from '../constants/authenticationEvents'
-import { logger } from '../utils/logger'
+import { User } from '../../entities/user.entity'
+import { AuthenticationEventType, DeviceType } from '../../constants/authenticationEvents'
+import { AuthenticationAudit } from '../../entities/authenticationAudit.entity'
+import { logger } from '../../utils/logger'
 
 export interface AuthenticationAuditData {
   user?: User
@@ -116,5 +116,3 @@ export class AuthenticationAuditService {
     }
   }
 }
-
-export const authenticationAuditService = new AuthenticationAuditService()

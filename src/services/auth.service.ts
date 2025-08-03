@@ -6,15 +6,18 @@ import { checkPassword, hashPassword } from '../utils/encryption'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import { tokenBlacklistService } from './tokenBlacklist.service'
-import { AuthenticationAuditData, authenticationAuditService } from './authenticationAudit.service'
 import { AuthenticationEventType } from '../constants/authenticationEvents'
 import { Request } from 'express'
 import { User } from '../entities/user.entity'
+import { AuthenticationAuditData, AuthenticationAuditService } from './authenticationAudit/authAudit.service'
 
 export class AuthService {
   private userRepository: UserRepository
+  private authenticationAuditService: AuthenticationAuditService
+
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository
+    this.authenticationAuditService = new AuthenticationAuditService()
   }
 
   createUser = async (userData: UserRegistrationDto) => {
@@ -44,7 +47,7 @@ export class AuthService {
         isSuccess: false,
       }
 
-      await authenticationAuditService.logAuthenticationEvent(req, loginAttemptAuditData)
+      await this.authenticationAuditService.logAuthenticationEvent(req, loginAttemptAuditData)
 
       user = await this.userRepository.getUserByUsername(username)
 
@@ -55,14 +58,14 @@ export class AuthService {
           isSuccess: false,
           failureReason: 'User not found',
         }
-        await authenticationAuditService.logAuthenticationEvent(req, loginFailureAuditData)
+        await this.authenticationAuditService.logAuthenticationEvent(req, loginFailureAuditData)
         throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS)
       }
 
       const isPasswordMatch = await checkPassword(password, user.password)
 
       if (isPasswordMatch === false) {
-        await authenticationAuditService.logAuthenticationEvent(req, {
+        await this.authenticationAuditService.logAuthenticationEvent(req, {
           user,
           username,
           eventType: AuthenticationEventType.LOGIN_FAILURE,
@@ -90,7 +93,7 @@ export class AuthService {
         tokenExpiredAt,
       }
 
-      await authenticationAuditService.logAuthenticationEvent(req, loginSuccessAuditData)
+      await this.authenticationAuditService.logAuthenticationEvent(req, loginSuccessAuditData)
 
       return {
         userId: user.id,
@@ -109,7 +112,7 @@ export class AuthService {
           failureReason: 'System error',
         }
 
-        await authenticationAuditService.logAuthenticationEvent(req, loginFailureAuditData)
+        await this.authenticationAuditService.logAuthenticationEvent(req, loginFailureAuditData)
         throw error
       }
     }
@@ -127,7 +130,7 @@ export class AuthService {
         tokenHash: token,
       }
 
-      await authenticationAuditService.logAuthenticationEvent(req, logoutSuccessAuditData)
+      await this.authenticationAuditService.logAuthenticationEvent(req, logoutSuccessAuditData)
 
       return {
         message: 'Logged out successfully',
@@ -142,7 +145,7 @@ export class AuthService {
         tokenHash: token,
       }
 
-      await authenticationAuditService.logAuthenticationEvent(req, logoutFailureAuditData)
+      await this.authenticationAuditService.logAuthenticationEvent(req, logoutFailureAuditData)
       throw error
     }
   }

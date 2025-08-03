@@ -10,16 +10,19 @@ import { accountsRouter } from './routes/accounts.route'
 import { routes } from './constants/routes'
 import { transactionsRouter } from './routes/transactions.route'
 import { notFoundHandler } from './middlewares/notFoundHandler'
+import { initCronJobs } from './utils/cronJobs'
 
 const initDatabase = async () => {
   try {
     await postgresDataSource.initialize()
     logger.info('Database initialized')
+
+    initCronJobs()
   } catch (err) {
-    /* istanbul ignore next */
     logger.info('Error connecting to initialized: ', err)
   }
 }
+
 
 initDatabase()
 
