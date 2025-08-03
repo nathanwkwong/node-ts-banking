@@ -7,6 +7,9 @@
     "**/*": [
       "prettier --write --ignore-unknown",
       "eslint"
+    ],
+    "*.{ts,tsx}": [
+      "npm run tsc-files"
     ]
   },
   "scripts": {
@@ -24,7 +27,8 @@
     "migrate:genUp": "npm run migrate:gen && npm run migrate:up",
     "migrate:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/database.ts",
     "migrate:drop": "typeorm-ts-node-commonjs schema:drop -d src/config/database.ts && rm -R src/migrations",
-    "prepare": "husky"
+    "prepare": "husky",
+    "tsc-files": "tsc-files --noEmit"
   },
   "repository": {
     "type": "git",
@@ -74,6 +78,7 @@
     "prettier": "3.3.3",
     "supertest": "7.0.0",
     "ts-node": "10.9.2",
+    "tsc-files": "^1.1.4",
     "typescript": "5.6.3",
     "typescript-eslint": "8.10.0"
   }
