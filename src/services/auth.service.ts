@@ -4,7 +4,8 @@ import { UserRepository } from '../repositories/user.repository'
 import { UserRegistrationDto } from '../schemas/user.schema'
 import { checkPassword, hashPassword } from '../utils/encryption'
 import { BadRequestException } from '../utils/exceptions/badRequestException'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { tokenBlacklistService } from './tokenBlacklist.service'
 
 export class AuthService {
   private userRepository: UserRepository
@@ -41,7 +42,7 @@ export class AuthService {
       throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS)
     }
 
-    const payload = {
+    const payload: JwtPayload = {
       id: user.id,
       username: user.username,
     }
@@ -52,6 +53,13 @@ export class AuthService {
       userId: user.id,
       username: user.username,
       accessToken,
+    }
+  }
+
+  logout = (token: string) => {
+    tokenBlacklistService.addBlackListToken(token)
+    return {
+      message: 'Logged out successfully',
     }
   }
 }

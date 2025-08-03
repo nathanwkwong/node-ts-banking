@@ -17,6 +17,10 @@ export const routes = {
       _relative: '/login',
       _full: `${BASE_ROUTE_PATH}/auth/login`,
     },
+    logout: {
+      _relative: '/logout',
+      _full: `${BASE_ROUTE_PATH}/auth/logout`,
+    },
   },
   account: {
     _relative: '/accounts',
